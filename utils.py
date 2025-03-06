@@ -153,7 +153,8 @@ def format_large_number(number: float) -> str:
     
 
 def get_stock_news(symbol: str, days_back: int = 7, max_items: int = 5) -> list:
-    API_KEY = st.secrets["NEWS_API_KEY"]  # Replace with your NewsAPI key or use st.secrets
+    #API_KEY = st.secrets["NEWS_API_KEY"]  # Replace with your NewsAPI key or use st.secrets
+    API_KEY = '16f43921b0d8438c84c39b1aab364c61'
     query = symbol
     language = 'en'
     page_size = max_items
