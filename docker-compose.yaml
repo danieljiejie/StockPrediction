@@ -1,7 +1,0 @@
-services:
-  app:
-    build: .
-    image: stock-prediction
-    ports:
-      - "5000:5000"
-    container_name: stock-app
