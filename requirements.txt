@@ -3,7 +3,7 @@ yfinance
 plotly
 pandas
 numpy
-sklearn
+scikit-learn
 ta
 textblob
 requests
