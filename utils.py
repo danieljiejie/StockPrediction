@@ -211,6 +211,24 @@ def get_news_sentiment(news: list) -> float:
     return 0.0
 
 
+# Function to fetch article content (simplified for demo)
+def fetch_article_content(url: str, title: str) -> str:
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            paragraphs = soup.find_all('p')
+            content = ' '.join(p.get_text() for p in paragraphs)[:1000]  # Limit to 1000 chars
+            return content
+        else:
+            print(f"Failed to fetch {url}, using title only")
+            return title
+    except Exception as e:
+        print(f"Error fetching {url}: {e}, using title only")
+        return title
+
+
 @st.cache_resource  # Cache the model loading for performance
 def load_finbert_model():
     tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
