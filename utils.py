@@ -9,6 +9,12 @@ import time
 from textblob import TextBlob
 import requests
 
+from bs4 import BeautifulSoup
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import streamlit as st
+
+
 @st.cache_data(ttl=3600)
 def fetch_stock_data(symbol: str, timeframe: str) -> pd.DataFrame:
     timeframe_dict = {"1M": "1mo", "3M": "3mo", "6M": "6mo", "1Y": "1y", "2Y": "2y", "5Y": "5y"}
@@ -153,7 +159,6 @@ def format_large_number(number: float) -> str:
     
 
 def get_stock_news(symbol: str, days_back: int = 7, max_items: int = 5) -> list:
-    #API_KEY = st.secrets["NEWS_API_KEY"]  # Replace with your NewsAPI key or use st.secrets
     API_KEY = '16f43921b0d8438c84c39b1aab364c61'
     query = symbol
     language = 'en'
@@ -204,4 +209,47 @@ def get_news_sentiment(news: list) -> float:
     if sentiments:
         return sum(sentiments) / len(sentiments)
     return 0.0
+
+
+@st.cache_resource  # Cache the model loading for performance
+def load_finbert_model():
+    tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
+    model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert")
+    return tokenizer, model
+
+def get_advanced_news_sentiment(news: list, days_back: int = 7) -> float:
+    tokenizer, model = load_finbert_model()
+    sentiments = []
+    current_time = datetime.now().timestamp()
+
+    for item in news:
+        url = item.get('link', '')
+        publish_time = item.get('providerPublishTime', current_time)
+        title = item.get('title', '')
+
+        # Fetch article content
+        content = fetch_article_content(url) if url else title
+        if not content:
+            content = title  # Fallback to title if content fetch fails
+
+        # Tokenize and analyze sentiment
+        inputs = tokenizer(content, return_tensors="pt", truncation=True, max_length=512, padding=True)
+        with torch.no_grad():
+            outputs = model(**inputs)
+            probs = torch.softmax(outputs.logits, dim=-1).numpy()[0]  # [Negative, Positive, Neutral]
+        
+        # Map to a sentiment score: Positive (+1), Neutral (0), Negative (-1)
+        sentiment_score = probs[1] - probs[0]  # Positive prob - Negative prob (range: -1 to 1)
+
+        # Temporal weighting: Linear decay over days_back
+        age_days = (current_time - publish_time) / (24 * 3600)  # Age in days
+        if age_days > days_back:
+            weight = 0  # Ignore articles older than days_back
+        else:
+            weight = 1 - (age_days / days_back)  # Linear decay: 1 (now) to 0 (days_back ago)
+        
+        sentiments.append(sentiment_score * weight)
+
+    # Average weighted sentiments
+    return sum(sentiments) / len(sentiments) if sentiments else 0.0
 
