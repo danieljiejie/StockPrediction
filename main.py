@@ -72,7 +72,7 @@ if symbol:
         news = get_stock_news(symbol)
         #sentiment_score = get_news_sentiment(news)
         sentiment_score = get_advanced_news_sentiment(news, days_back=7)
-        news_impact_factor = 5
+        news_impact_factor = 2
 
         # Display company info
         st.header(f"{company_info['name']} ({symbol})")
