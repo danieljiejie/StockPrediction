@@ -3,7 +3,7 @@ import yfinance as yf
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import pandas as pd
-from utils import fetch_stock_data, get_company_info, format_large_number, predict_next_day_price,get_news_sentiment,get_stock_news
+from utils import fetch_stock_data, get_company_info, format_large_number, predict_next_day_price,get_news_sentiment,get_stock_news,get_advanced_news_sentiment
 from styles import apply_styles
 import time
 from StockPredictionModel import predict_with_models
