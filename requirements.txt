@@ -9,3 +9,6 @@ textblob
 requests
 tensorflow
 xgboost
+beautifulsoup4
+transformers
+torch
