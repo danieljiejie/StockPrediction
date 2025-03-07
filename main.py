@@ -71,7 +71,7 @@ if symbol:
         # Fetch news and compute sentiment
         news = get_stock_news(symbol)
         #sentiment_score = get_news_sentiment(news)
-        sentiment_score = get_advanced_news_sentiment(news, days_back=30)
+        sentiment_score = get_advanced_news_sentiment(news, days_back=7)
         news_impact_factor = 5
 
         # Display company info
