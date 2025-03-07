@@ -246,7 +246,7 @@ def get_advanced_news_sentiment(news: list, days_back: int = 7) -> float:
         title = item.get('title', '')
 
         # Fetch article content
-        content = fetch_article_content(url) if url else title
+        content = fetch_article_content(url,title) if url else title
         if not content:
             content = title  # Fallback to title if content fetch fails
 
