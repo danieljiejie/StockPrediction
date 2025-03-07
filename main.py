@@ -157,7 +157,6 @@ if symbol:
             # Display news sentiment
             sentiment_label = "Positive" if sentiment_score > 0.1 else "Negative" if sentiment_score < -0.1 else "Neutral"
             st.write(f"Current News Sentiment: {sentiment_label} ({sentiment_score:.2f} on scale -1 to 1)")
-            st.metric(f"Predicted {horizon_name} Price", f"${ensemble_price:.2f}", f"{((ensemble_price - current_price) / current_price * 100):.2f}%")
             st.write("This sentiment adjusts the price predictions based on recent news.")
             
             if st.button("Show Recent News"):
