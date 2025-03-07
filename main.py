@@ -70,7 +70,9 @@ if symbol:
 
         # Fetch news and compute sentiment
         news = get_stock_news(symbol)
-        sentiment_score = get_news_sentiment(news)
+        #sentiment_score = get_news_sentiment(news)
+        sentiment_score = get_advanced_news_sentiment(news, days_back=7)
+        news_impact_factor = 5
 
         # Display company info
         st.header(f"{company_info['name']} ({symbol})")
@@ -131,10 +133,11 @@ if symbol:
         if ensemble_predictions:
             # Adjust predictions with news sentiment
             for horizon in horizons:
-                adjustment = sentiment_score * volatility / np.sqrt(horizon)
+                adjustment = sentiment_score * volatility * news_impact_factor / np.sqrt(horizon)
                 ensemble_predictions[horizon] *= (1 + adjustment)
 
             st.subheader("AI Price Predictions")
+            st.write(f"Price Adjustment Factor: {1 + adjustment:.4f} ({adjustment * 100:.2f}% increase)")
             cols = st.columns(len(horizons))
             horizon_names = {1: "Next Day", 5: "Next Week", 20: "Next Month"}
             for i, horizon in enumerate(horizons):
